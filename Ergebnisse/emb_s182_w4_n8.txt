@@ -1,0 +1,68 @@
+start
+sdfds
+embeddings/emb_s128_w4_n8.json
+11980
+11980
+11980
+6902
+6902
+6902
+Training..
+predicting..
+Train Set: corpora/guardian_train.xml
+Test Set: corpora/guardian_dev.xml
+Tag: T1
+*** T1 ***
+T1 max:  2349
+T1 min:  0
+T1 avg:  62.1249582638
+T1 Median:  38.0
+Feature Selection: []
+++++++++++++++++++++++++++++++++++++++++++
+
+
+
+             precision    recall  f1-score   support
+
+        low       0.61      0.49      0.55      3236
+       high       0.62      0.72      0.67      3666
+
+avg / total       0.61      0.62      0.61      6902
+
+[[1594 1642]
+ [1014 2652]]
+Accuracy:  0.615184004636
+start
+sdfds
+embeddings/emb_s128_w4_n8.json
+11980
+11980
+11980
+6902
+6902
+6902
+Training..
+predicting..
+Train Set: corpora/guardian_train.xml
+Test Set: corpora/guardian_dev.xml
+Tag: T1
+*** T1 ***
+T1 max:  2349
+T1 min:  0
+T1 avg:  62.1249582638
+T1 Median:  38.0
+Feature Selection: []
+++++++++++++++++++++++++++++++++++++++++++
+
+
+
+             precision    recall  f1-score   support
+
+        low       0.61      0.49      0.55      3236
+       high       0.62      0.72      0.67      3666
+
+avg / total       0.61      0.62      0.61      6902
+
+[[1594 1642]
+ [1014 2652]]
+Accuracy:  0.615184004636

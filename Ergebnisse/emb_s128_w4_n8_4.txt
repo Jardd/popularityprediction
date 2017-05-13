@@ -1,0 +1,38 @@
+start
+sdfds
+embeddings/emb_s128_w4_n8.json
+t1:  15
+t2:  38.0
+t3:  80
+[15, 38.0, 80]
+6046
+6046
+6046
+6902
+6902
+6902
+Training..
+predicting..
+Train Set: corpora/guardian_train.xml
+Test Set: corpora/guardian_dev.xml
+Tag: T1
+*** T1 ***
+T1 max:  2349
+T1 min:  0
+T1 avg:  62.1249582638
+T1 Median:  38.0
+Feature Selection: []
+++++++++++++++++++++++++++++++++++++++++++
+
+
+
+             precision    recall  f1-score   support
+
+        low       0.84      0.17      0.29      3236
+    low-med       0.57      0.97      0.72      3666
+
+avg / total       0.70      0.60      0.52      6902
+
+[[ 561 2675]
+ [ 108 3558]]
+Accuracy:  0.596783541003
