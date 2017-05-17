@@ -2,7 +2,7 @@
 #import xml.dom.minidom
 import analyse
 #import baseline
-
+import math
 import sys
 import nltk
 import textProcessing
@@ -389,65 +389,23 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     idf=create_idf_dict(train_headlines_list_text)
 
     ###Make words verktor to embedding vektor####
+    global oov
     oov={}
+    
     i=0
-    train_matrix=[]
-    for headline in train_headlines_list_text:
-
-
-        sum_vektor_h=np.array([0])
-        for word in headline:
-            if word in embeddings_dict.keys():
-                emb=np.array(embeddings_dict[word])
-                sum_vektor_h=sum_vektor_h+emb
-            elif word in oov:
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+emb
-            else:
-                oov[word]=np.random.rand(check)
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+emb
-
-        #print len(sum_vektor_h)
-        if len(sum_vektor_h)==check:
-        
-            train_matrix.append(sum_vektor_h)                
-        else:
-            print "sollte nicht mehr passieren!!"
-            print word
-            train_matrix.append(np.zeros(check))
+    train_matrix=convert_headlines_to_emb(train_headlines_list_text, embeddings_dict,idf)
+    
                           
 
 
     print len(train_matrix)
     test_matrix=[]
 
+    test_matrix=convert_headlines_to_emb(test_headlines_list_text, embeddings_dict, idf)
 
-    for headline in test_headlines_list_text:
+   
+   # print oov
 
-        sum_vektor_h=np.array([0])
-        for word in headline:
-            if word in embeddings_dict.keys():
-                emb=np.array(embeddings_dict[word])
-                sum_vektor_h=sum_vektor_h+emb
-            elif word in oov:
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+emb
-            else:
-                oov[word]=np.random.rand(len(sum_vektor_h))
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+emb
-
-        #print len(sum_vektor_h)
-        if len(sum_vektor_h)==check:
-        
-            test_matrix.append(sum_vektor_h)                
-        else:
-            print "sollte nicht mehr passieren!!"
-            print word
-            test_matrix.append(np.zeros(check))
-
-    print oov
     print len(test_headlines_list_text)
     print len(test_classes)
     print len(test_matrix)
@@ -468,10 +426,47 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
 def create_idf_dict(headlines_list_text):
     vocab=set(sum(headlines_list_text, []))
     idf=defaultdict(int)
+    num_doc=len(headlines_list_text)
    # number of doc ,number of doc with term
     num_doc=len(headlines_list_text)
     for word in vocab:
         for headline in headlines_list_text:
             if word in headline:
-                idf[word]=idf[word]+1 
+                idf[word]=idf[word]+1
+    for key in idf:
+        idf[key]=math.log((num_doc/float(idf[key])),2)
+    
     return idf
+
+
+def convert_headlines_to_emb(headlines_list_text,embeddings_dict, idf):
+    matrix=[]
+    check=len(embeddings_dict["for"])    
+
+    for headline in headlines_list_text:
+
+        sum_vektor_h=np.array([0])
+        for word in headline:
+            weight=1
+            if word in idf:
+                weight=idf[word]
+            if word in embeddings_dict.keys():
+                emb=np.array(embeddings_dict[word])
+                sum_vektor_h=sum_vektor_h+(emb*weight)
+            elif word in oov:
+                emb=np.array(oov[word])
+                sum_vektor_h=sum_vektor_h+(emb*weight)
+            else:
+                oov[word]=np.random.rand(len(sum_vektor_h))
+                emb=np.array(oov[word])
+                sum_vektor_h=sum_vektor_h+(emb*weight)
+
+        #print len(sum_vektor_h)
+        if len(sum_vektor_h)==check:
+        
+            matrix.append(sum_vektor_h)                
+        else:
+            print "sollte nicht mehr passieren!!"
+    #        print word
+            matrix.append(np.zeros(check))
+    return matrix
