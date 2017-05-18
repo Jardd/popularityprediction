@@ -400,12 +400,12 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     
                           
 
-    print "train to emb finished"
+
     print len(train_matrix)
     test_matrix=[]
 
     test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict, idf)
-    print "test to emb finished"
+
    
    # print oov
 
