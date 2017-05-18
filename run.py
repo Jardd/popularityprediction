@@ -482,12 +482,12 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
     check=len(embeddings_dict["for"])    
 
     for headline in headlines_list_text:
-        print headline
+       
         sum_vektor_h=np.zeros(check)
         for word in headline:
             weight=idf.get(word, 1)
             if word in embeddings_dict.keys():
-                sum_vektor_h=sum_vektor_h+(embeddings_dict[word]*weight)
+                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word])*weight)
             elif word in oov:
                 sum_vektor_h=sum_vektor_h+(ovv[word]*weight)
             else:
