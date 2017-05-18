@@ -390,21 +390,23 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     check=len(embeddings_dict["for"])    
 
     #hier
+    print "start making idf"
     idf=create_idf_dict(train_headlines_list_text)
 
     ###Make words verktor to embedding vektor####
     global oov
     oov={}
-    
+    print "start making train_emb"
     i=0
     train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
     
                           
 
     print "train to emb finished"
+
     print len(train_matrix)
     test_matrix=[]
-
+    print "stat making test_emb"
     test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict, idf)
     print "test to emb finished"
    
