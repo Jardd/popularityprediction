@@ -391,8 +391,8 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
 
     #hier
     print "start making idf"
-    idf=create_idf_dict(train_headlines_list_text)
-
+    #idf=create_idf_dict(train_headlines_list_text)
+    idf={}
     ###Make words verktor to embedding vektor####
     global oov
     oov={}
@@ -489,7 +489,7 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
             if word in embeddings_dict.keys():
                 sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word])*weight)
             elif word in oov:
-                sum_vektor_h=sum_vektor_h+(ovv[word]*weight)
+                sum_vektor_h=sum_vektor_h+(oov[word]*weight)
             else:
                 oov[word]=np.random.rand(len(sum_vektor_h))
                 sum_vektor_h=sum_vektor_h+(oov[word]*weight)
@@ -502,7 +502,7 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
             print "sollte nicht mehr passieren!!"
     #        print word
             matrix.append(np.zeros(check))
-
+    return matrix
 
 def loadGloVe(filename):
     vocab = []
