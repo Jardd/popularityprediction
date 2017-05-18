@@ -338,6 +338,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     with open(test_corpus+'.json') as data_file:
         test_headlines_list = json.load(data_file)
     if embeddings_json.endswith(".json"):
+        print "in if"
         with open(embeddings_json) as data_file:
             embeddings_dict=json.load(data_file)
     else:
