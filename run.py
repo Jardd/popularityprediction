@@ -474,7 +474,7 @@ def convert_headlines_to_emb(headlines_list_text,embeddings_dict, idf):
     #        print word
             matrix.append(np.zeros(check))
     return matrix
-def convert_headlines_to_emb_fast(headlines_list_text, embeddings, idf):
+def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
 
     matrix=[]
     check=len(embeddings_dict["for"])    
