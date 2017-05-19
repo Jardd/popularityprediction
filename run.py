@@ -401,8 +401,9 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     oov={}
     print "start making train_emb"
     i=0
-    headlines_emb_train="headlines_"+corpus_train_+weighting_+embeddings_json
-    headlines_emb_test="headlines_"+corpus_test_+weighting_+embeddings_json
+    embedd=embeddings_json.split("/")[1]
+    headlines_emb_train="headlines_"+corpus_train_+weighting_+embedd
+    headlines_emb_test="headlines_"+corpus_test_+weighting_+embedd
     if headlines_emb_train.exists(): #headlines already representet as embeddings with weights applied
         with open(headlines_emb_train) as data_file:
             train_matrix=json.load("headline_emb/"+data_file)
