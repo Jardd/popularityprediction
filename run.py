@@ -402,15 +402,15 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_"+corpus_train_+weighting_+embedd
-    headlines_emb_test="headlines_"+corpus_test_+weighting_+embedd
-    if headlines_emb_train.exists(): #headlines already representet as embeddings with weights applied
-        with open(headlines_emb_train) as data_file:
-            train_matrix=json.load("headline_emb/"+data_file)
+    headlines_emb_train="headlines_"+corpus_train+"_"+weighting+"_"+embedd
+    headlines_emb_test="headlines_"+corpus_test+"_"+weighting+"_"+embedd
+    if os.path.exists("headline_emb/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
+        with open("headline_emb/"+headlines_emb_train) as data_file:
+            train_matrix=json.load(data_file)
     else:
         train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
-        with open(headlines_emb_train, "w") as f:
-            json.dump("headline_emb/"+train_matrix, f)
+        with open("headline_emb/"+headlines_emb_train, "w") as f:
+            json.dump(train_matrix, f)
                           
 
     print "train to emb finished"
@@ -419,16 +419,17 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     test_matrix=[]
     print "stat making test_emb"
     
-    if headlines_emb_test.exists(): #headlines already representet as embeddings with weights applied
-        with open(headlines_emb_test) as data_file:
-            test_matrix=json.load("headline_emb/"+data_file)
+    if os.path.exists("headline_emb/"+headlines_emb_test): #headlines already representet as embeddings with weights applied
+        with open("headline_emb/"+headlines_emb_test) as data_file:
+            test_matrix=json.load(data_file)
     else:
         test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
-        with open(headlines_emb_test, "w") as f:
-            json.dump("headline_emb/"+test_matrix, f)
+        with open("headline_emb/"+headlines_emb_test, "w") as f:
+            json.dump(test_matrix, f)
     print "test to emb finished"
    
    # print oov
+
 
     print len(test_headlines_list_text)
     print len(test_classes)
@@ -515,11 +516,11 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
         
-            matrix.append(sum_vektor_h)                
+            matrix.append(sum_vektor_h.tolist())                
         else:
             print "sollte nicht mehr passieren!!"
     #        print word
-            matrix.append(np.zeros(check))
+            matrix.append(np.zeros(check).tolist())
     return matrix
 
 def loadGloVe(filename):
