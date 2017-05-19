@@ -329,9 +329,10 @@ def brownSetUpBE(input_corpus):
 
 
 
-def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
+def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     headlines_train , headlines_test =xmlProc.readXML(train_corpus, test_corpus)
-      
+    corpus_train=train_corpus.split("/")[1]  
+    corpus_test=test_corpus.split("/")[1]  
     print embeddings_json   
     with open(train_corpus+'.json') as data_file:    
         train_headlines_list = json.load(data_file)
@@ -390,16 +391,25 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     check=len(embeddings_dict["for"])    
 
     #hier
-    print "start making idf"
-    #idf=create_idf_dict(train_headlines_list_text)
-    idf={}
+    if weighting=="idf":
+        print "start making idf"
+        idf=create_idf_dict(train_headlines_list_text)
+    else:
+        idf={}
     ###Make words verktor to embedding vektor####
     global oov
     oov={}
     print "start making train_emb"
     i=0
-    train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
-    
+    headlines_emb_train="headlines_"+corpus_train_+weighting_+embeddings_json
+    headlines_emb_test="headlines_"+corpus_test_+weighting_+embeddings_json
+    if headlines_emb_train.exists(): #headlines already representet as embeddings with weights applied
+        with open(headlines_emb_train) as data_file:
+            train_matrix=json.load("headline_emb/"+data_file)
+    else:
+        train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
+        with open(headlines_emb_train, "w") as f:
+            json.dump("headline_emb/"+train_matrix, f)
                           
 
     print "train to emb finished"
@@ -407,7 +417,14 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json):
     print len(train_matrix)
     test_matrix=[]
     print "stat making test_emb"
-    test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict, idf)
+    
+    if headlines_emb_test.exists(): #headlines already representet as embeddings with weights applied
+        with open(headlines_emb_test) as data_file:
+            test_matrix=json.load("headline_emb/"+data_file)
+    else:
+        test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
+        with open(headlines_emb_test, "w") as f:
+            json.dump("headline_emb/"+test_matrix, f)
     print "test to emb finished"
    
    # print oov
