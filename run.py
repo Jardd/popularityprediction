@@ -402,13 +402,14 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_"+corpus_train+"_"+weighting+"_"+embedd
-    headlines_emb_test="headlines_"+corpus_test+"_"+weighting+"_"+embedd
+    headlines_emb_train="headlines_multi_"+corpus_train+"_"+weighting+"_"+embedd
+    headlines_emb_test="headlines_multi_"+corpus_test+"_"+weighting+"_"+embedd
     if os.path.exists("headline_emb/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
         with open("headline_emb/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
     else:
-        train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
+        #train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
+        train_matrix=convert_headlines_emb_multi(train_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
                           
@@ -423,7 +424,8 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
         with open("headline_emb/"+headlines_emb_test) as data_file:
             test_matrix=json.load(data_file)
     else:
-        test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
+        #test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
+        test_matrix=convert_headlines_emb_multi(train_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
     print "test to emb finished"
@@ -464,37 +466,7 @@ def create_idf_dict(headlines_list_text):
     return idf
 
 
-def convert_headlines_to_emb(headlines_list_text,embeddings_dict, idf):
-    matrix=[]
-    check=len(embeddings_dict["for"])    
 
-    for headline in headlines_list_text:
-        print headline
-        sum_vektor_h=np.array([0])
-        for word in headline:
-            weight=1
-            if word in idf:
-                weight=idf[word]
-            if word in embeddings_dict.keys():
-                emb=np.array(embeddings_dict[word])
-                sum_vektor_h=sum_vektor_h+(emb*weight)
-            elif word in oov:
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+(emb*weight)
-            else:
-                oov[word]=np.random.rand(len(sum_vektor_h))
-                emb=np.array(oov[word])
-                sum_vektor_h=sum_vektor_h+(emb*weight)
-
-        #print len(sum_vektor_h)
-        if len(sum_vektor_h)==check:
-        
-            matrix.append(sum_vektor_h)                
-        else:
-            print "sollte nicht mehr passieren!!"
-    #        print word
-            matrix.append(np.zeros(check))
-    return matrix
 def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
 
     matrix=[]
@@ -539,3 +511,28 @@ def loadGloVe(filename):
     file.close()
     
     return emb_dict
+
+
+def headline_emb_multi(headlines_list_text, embeddings_dict, idf):
+    matrix=[]
+    check=len(embeddings_dict["for"])    
+
+    for headline in headlines_list_text:
+       
+        sum_vektor_h=np.zeros(check)
+        for word in headline:
+            weight=idf.get(word, 1)
+            if word in embeddings_dict.keys():
+                sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word])*weight)
+            elif word in oov:
+                sum_vektor_h=sum_vektor_h*(oov[word]*weight)
+            else:
+                oov[word]=np.random.rand(len(sum_vektor_h))
+                sum_vektor_h=sum_vektor_h*(oov[word]*weight)
+
+        #print len(sum_vektor_h)
+        if len(sum_vektor_h)==check:
+        
+            matrix.append(sum_vektor_h.tolist())                
+        else:
+            print "sollte nicht mehr passieren!!"
