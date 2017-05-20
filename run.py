@@ -409,7 +409,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
             train_matrix=json.load(data_file)
     else:
         #train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
-        train_matrix=convert_headlines_emb_multi(train_headlines_list_text, embeddings_dict,idf)
+        train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
                           
@@ -425,7 +425,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
             test_matrix=json.load(data_file)
     else:
         #test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
-        test_matrix=convert_headlines_emb_multi(train_headlines_list_text, embeddings_dict,idf)
+        test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
     print "test to emb finished"
@@ -536,3 +536,5 @@ def headline_emb_multi(headlines_list_text, embeddings_dict, idf):
             matrix.append(sum_vektor_h.tolist())                
         else:
             print "sollte nicht mehr passieren!!"
+            matrix.append(np.zeros(check).tolist())
+    return matrix
