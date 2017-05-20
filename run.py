@@ -519,7 +519,7 @@ def headline_emb_multi(headlines_list_text, embeddings_dict, idf):
 
     for headline in headlines_list_text:
        
-        sum_vektor_h=np.zeros(check)
+        sum_vektor_h=np.random.rand(len(check))
         for word in headline:
             weight=idf.get(word, 1)
             if word in embeddings_dict.keys():
