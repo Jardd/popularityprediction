@@ -342,6 +342,9 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
         print "in if"
         with open(embeddings_json) as data_file:
             embeddings_dict=json.load(data_file)
+    elif embeddings_json.endswith("300.txt"):
+        print "google"
+        embeddings_dict=loadGoogle(embeddings_json)
     else:
         embeddings_dict=loadGloVe(embeddings_json)
       
@@ -402,14 +405,14 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_multi_"+corpus_train+"_"+weighting+"_"+embedd
-    headlines_emb_test="headlines_multi_"+corpus_test+"_"+weighting+"_"+embedd
+    headlines_emb_train="headlines_"+corpus_train+"_"+weighting+"_"+embedd
+    headlines_emb_test="headlines_"+corpus_test+"_"+weighting+"_"+embedd
     if os.path.exists("headline_emb/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
         with open("headline_emb/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
     else:
-        #train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
-        train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict,idf)
+        train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,idf)
+        #train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
                           
@@ -424,8 +427,8 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, weighting):
         with open("headline_emb/"+headlines_emb_test) as data_file:
             test_matrix=json.load(data_file)
     else:
-        #test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
-        test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict,idf)
+        test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,idf)
+        #test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
     print "test to emb finished"
@@ -471,9 +474,9 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
 
     matrix=[]
     check=len(embeddings_dict["for"])    
-
+    i=0
     for headline in headlines_list_text:
-       
+        i=i+1
         sum_vektor_h=np.zeros(check)
         for word in headline:
             weight=idf.get(word, 1)
@@ -487,7 +490,7 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, idf):
 
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
-        
+            print >> sys.stderr, i , ' von ', len(headlines_list_text)
             matrix.append(sum_vektor_h.tolist())                
         else:
             print "sollte nicht mehr passieren!!"
@@ -514,15 +517,23 @@ def loadGloVe(filename):
 
 
 def headline_emb_multi(headlines_list_text, embeddings_dict, idf):
+    print "works"
     matrix=[]
+    oov={}
     check=len(embeddings_dict["for"])    
 
     for headline in headlines_list_text:
        
-        sum_vektor_h=np.random.rand(len(check))
+        sum_vektor_h=np.random.rand(check)
+        sum_vektor_h=np.ones(check)
         for word in headline:
+            print word
+            print embeddings_dict.keys()
             weight=idf.get(word, 1)
-            if word in embeddings_dict.keys():
+            if word in embeddings_dict.keys(): 
+                print sum_vektor_h
+                print embeddings_dict[word]
+                print weight
                 sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word])*weight)
             elif word in oov:
                 sum_vektor_h=sum_vektor_h*(oov[word]*weight)
@@ -538,3 +549,26 @@ def headline_emb_multi(headlines_list_text, embeddings_dict, idf):
             print "sollte nicht mehr passieren!!"
             matrix.append(np.zeros(check).tolist())
     return matrix
+
+
+
+def loadGoogle(filename):
+    vocab = []
+    embd = []
+    emb_dict={}
+    i=0
+    file = open(filename,'r')
+    for line in file.readlines()[1:]:
+
+
+        row = line.strip().split(' ')
+        
+        emb=map(float, row[1:])
+        emb_dict[row[0].decode("utf-8")]=emb
+        #vocab.append(row[0])
+        #embd.append(row[1:])
+    print('Loaded Google!')
+    file.close()
+    
+    return emb_dict
+
