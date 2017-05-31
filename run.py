@@ -327,6 +327,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     print len(test_classes)
     print len(test_matrix)
     target_names=["low","high"]
+    #train_matrix, test_matrix=featureSelection.chiSquare(train_matrix, test_matrix, train_classes, 170, [])
     if split==44:
         target_names=["low","low-med","high-med","high"]
     print "Training.."
@@ -460,12 +461,12 @@ def loadGoogle(filename):
 def read_ext_features(filename):
     features=[]
     f=open(filename, "r")
-    for line in f.readlines()[1:]:
+    for line in f.readlines():
         
         row = line.split(',')
         row=row[1:]
         row=map(str.strip, row)
         row = map(float, row)
-        features.add(row)
+        features.append(row)
     f.close()
     return features
