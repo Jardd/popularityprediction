@@ -15,7 +15,8 @@ if ( __name__ == "__main__"):
     split=int(sys.argv[3])
     tag=str(sys.argv[4])
     emb=str(sys.argv[5])
-    weighting=str(sys.argv[6])
+    ext_feature_file_train=str(sys.argv[6])
+    ext_feature_file_test=str(sys.argv[7])
     print "sdfds"
-    run.skipgram(train_corpus, test_corpus, split, tag, emb, weighting)
+    run.skipgram(train_corpus, test_corpus, split, tag, emb, ext_feature_file_train, ext_feature_file_test)
 

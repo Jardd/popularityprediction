@@ -5,3 +5,6 @@ corpora/*
 corpora\*
 Ergebnisse/*
 Ergebnisse\*
+*pyc
+aliciaFeatures\*
+aliciaFeatures/*
