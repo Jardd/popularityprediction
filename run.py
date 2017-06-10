@@ -292,13 +292,14 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_EXT_"+corpus_train+"_"+embedd
-    headlines_emb_test="headlines_EXT_"+corpus_test+"_"+embedd
+    headlines_emb_train="headlines_ADD"+corpus_train+"_"+embedd
+    headlines_emb_test="headlines_ADD"+corpus_test+"_"+embedd
     if os.path.exists("headline_emb/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
         with open("headline_emb/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
     else:
-        train_matrix=convert_headlines_to_emb_fast(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
+        train_matrix=convert_headlines_to_emb_add(train_headlines_list_text, embeddings_dict)
+        #train_matrix=convert_headlines_to_emb_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
         #train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
@@ -314,7 +315,8 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
         with open("headline_emb/"+headlines_emb_test) as data_file:
             test_matrix=json.load(data_file)
     else:
-        test_matrix=convert_headlines_to_emb_fast(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
+        train_matrix=convert_headlines_to_emb_add(train_headlines_list_text, embeddings_dict)
+        #test_matrix=convert_headlines_to_emb_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
         #test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict,idf)
         with open("headline_emb/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
@@ -358,7 +360,7 @@ def create_idf_dict(headlines_list_text):
 
 
 
-def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, ext_features_file):
+def convert_headlines_to_emb_EXT(headlines_list_text, embeddings_dict, ext_features_file):
     ext_features=read_ext_features(ext_features_file)
     
     matrix=[]
@@ -381,6 +383,34 @@ def convert_headlines_to_emb_fast(headlines_list_text, embeddings_dict, ext_feat
         if len(sum_vektor_h)==check:
             print >> sys.stderr, i , ' von ', len(headlines_list_text)
             matrix.append(sum_vektor_h.tolist()+ext_features[i])                
+        else:
+            print "sollte nicht mehr passieren!!"
+    #        print word
+            matrix.append(np.zeros(check).tolist())
+        i=i+1
+    return matrix
+
+def convert_headlines_to_emb_add(headlines_list_text, embeddings_dict):
+    matrix=[]
+    check=len(embeddings_dict["for"])    
+    i=0
+    for headline in headlines_list_text:
+        
+        sum_vektor_h=np.zeros(check)
+        for word in headline:
+            
+            if word in embeddings_dict.keys():
+                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word]))
+            elif word in oov:
+                sum_vektor_h=sum_vektor_h+(oov[word])
+            else:
+                oov[word]=np.random.rand(len(sum_vektor_h))
+                sum_vektor_h=sum_vektor_h+(oov[word])
+
+        #print len(sum_vektor_h)
+        if len(sum_vektor_h)==check:
+            print >> sys.stderr, i , ' von ', len(headlines_list_text)
+            matrix.append(sum_vektor_h.tolist())                
         else:
             print "sollte nicht mehr passieren!!"
     #        print word
