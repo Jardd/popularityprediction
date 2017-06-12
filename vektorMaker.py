@@ -26,6 +26,7 @@ def get2ClassesTest(headlines, tag, threshold):
     for headline in headlines:
         value=int(headline.getElementsByTagName(tag)[0].childNodes[0].data)
         if value<=threshold:
+            print value , "<=", threshold
             classes.append(0)
         else:
             classes.append(1)

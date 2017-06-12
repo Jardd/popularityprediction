@@ -54,8 +54,8 @@ def chiSquare(train_binary, test_binary, classes_train, k, features):
     #vectorizer = CountVectorizer()
     #X = vectorizer.fit_transform(train_headlines_list_text)
     X_train = ch2.fit_transform(train_binary, classes_train)
-    #topf=np.asarray(features)[ch2.get_support()]
-    #print topf
+    topf=np.asarray(features)[ch2.get_support()]
+    print topf
     X_test=ch2.transform(test_binary)
     return X_train, X_test
     #return features

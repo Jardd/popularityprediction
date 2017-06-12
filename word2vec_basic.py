@@ -123,7 +123,7 @@ print(len(reverse_dictionary))
 # Step 4: Build and train a skip-gram model.
 
 batch_size = 128
-embedding_size = 128  # Dimension of the embedding vector.
+embedding_size = 600  # Dimension of the embedding vector.
 skip_window = 8       # How many words to consider left and right.
 num_skips = 16         # How many times to reuse an input to generate a label.
 
