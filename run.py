@@ -202,16 +202,17 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_MULTI"+corpus_train+"_"+embedd
-    headlines_emb_test="headlines_MULTI"+corpus_test+"_"+embedd
-    if os.path.exists("headline_emb/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
+    headlines_emb_train="headlines_multi_EXT"+corpus_train+"_"+embedd
+    headlines_emb_test="headlines_multi_EXT"+corpus_test+"_"+embedd
+    if os.path.exists("headline_new/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
         with open("headline_emb/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
     else:
         #train_matrix=convert_headlines_to_emb_add(train_headlines_list_text, embeddings_dict)
         #train_matrix=convert_headlines_to_emb_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
-        train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict)
-        with open("headline_emb/"+headlines_emb_train, "w") as f:
+        train_matrix=headline_emb_multi_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
+        #train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict)
+        with open("headline_new/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
                           
 
@@ -222,13 +223,14 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     print "stat making test_emb"
     
     if os.path.exists("headline_emb/"+headlines_emb_test): #headlines already representet as embeddings with weights applied
-        with open("headline_emb/"+headlines_emb_test) as data_file:
+        with open("headline_new/"+headlines_emb_test) as data_file:
             test_matrix=json.load(data_file)
     else:
         #test_matrix=convert_headlines_to_emb_add(test_headlines_list_text, embeddings_dict)
         #test_matrix=convert_headlines_to_emb_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
-        test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict)
-        with open("headline_emb/"+headlines_emb_test, "w") as f:
+        test_matrix=headline_emb_multi_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
+        #test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict)
+        with open("headline_new/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
     print "test to emb finished"
    
@@ -348,7 +350,7 @@ def loadGloVe(filename):
 
 def headline_emb_multi_EXT(headlines_list_text, embeddings_dict, ext_features_file):
     ext_features=read_ext_features(ext_features_file)
-    print "works"
+    print "works multi EXT"
     matrix=[]
     oov={}
     check=len(embeddings_dict["for"])    
@@ -369,7 +371,9 @@ def headline_emb_multi_EXT(headlines_list_text, embeddings_dict, ext_features_fi
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
         
-            matrix.append(sum_vektor_h.tolist()+ext_features[i])                
+            print >> sys.stderr, i , ' von ', len(headlines_list_text)
+            matrix.append(sum_vektor_h.tolist()+ext_features[i])
+            print ext_features[i]                
         else:
             print "sollte nicht mehr passieren!!"
             matrix.append(np.zeros(check).tolist())
@@ -385,7 +389,7 @@ def headline_emb_multi(headlines_list_text, embeddings_dict):
     i=0
     for headline in headlines_list_text:
        
-        sum_vektor_h=np.random.rand(check)
+        #sum_vektor_h=np.random.rand(check)
         sum_vektor_h=np.ones(check)
         for word in headline:
             if word in embeddings_dict.keys(): 
@@ -399,6 +403,7 @@ def headline_emb_multi(headlines_list_text, embeddings_dict):
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
         
+            print >> sys.stderr, i , ' von ', len(headlines_list_text)
             matrix.append(sum_vektor_h.tolist())                
         else:
             print "sollte nicht mehr passieren!!"
