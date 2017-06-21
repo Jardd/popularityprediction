@@ -321,6 +321,7 @@ def convert_headlines_to_emb_EXT(headlines_list_text, embeddings_dict, ext_featu
     
     
     """
+    idf=create_idf_dict(headlines_list_text)
     ext_features=read_ext_features(ext_features_file)
     
     matrix=[]
@@ -332,12 +333,12 @@ def convert_headlines_to_emb_EXT(headlines_list_text, embeddings_dict, ext_featu
         for word in headline:
             
             if word in embeddings_dict.keys():
-                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word]))
+                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word])*idf.get(word, 1))
             elif word in oov:
-                sum_vektor_h=sum_vektor_h+(oov[word])
+                sum_vektor_h=sum_vektor_h+(oov[word]*idf.get(word, 1))
             else:
                 oov[word]=np.random.rand(len(sum_vektor_h))
-                sum_vektor_h=sum_vektor_h+(oov[word])
+                sum_vektor_h=sum_vektor_h+(oov[word]*idf.get(word, 1))
 
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
@@ -351,6 +352,7 @@ def convert_headlines_to_emb_EXT(headlines_list_text, embeddings_dict, ext_featu
     return matrix
 
 def convert_headlines_to_emb_add(headlines_list_text, embeddings_dict):
+    idf=create_idf_dict(headlines_list_text)
     matrix=[]
     check=len(embeddings_dict["for"])    
     i=0
@@ -360,12 +362,12 @@ def convert_headlines_to_emb_add(headlines_list_text, embeddings_dict):
         for word in headline:
             
             if word in embeddings_dict.keys():
-                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word]))
+                sum_vektor_h=sum_vektor_h+(np.array(embeddings_dict[word])*idf.get(word, 1))
             elif word in oov:
-                sum_vektor_h=sum_vektor_h+(oov[word])
+                sum_vektor_h=sum_vektor_h+(oov[word]*idf.get(word, 1))
             else:
                 oov[word]=np.random.rand(len(sum_vektor_h))
-                sum_vektor_h=sum_vektor_h+(oov[word])
+                sum_vektor_h=sum_vektor_h+(oov[word]*idf.get(word, 1))
 
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
@@ -397,6 +399,7 @@ def loadGloVe(filename):
 
 
 def headline_emb_multi_EXT(headlines_list_text, embeddings_dict, ext_features_file):
+    idf=create_idf_dict(headlines_list_text)
     ext_features=read_ext_features(ext_features_file)
     print "works multi EXT"
     matrix=[]
@@ -409,12 +412,12 @@ def headline_emb_multi_EXT(headlines_list_text, embeddings_dict, ext_features_fi
         sum_vektor_h=np.ones(check)
         for word in headline:
             if word in embeddings_dict.keys(): 
-                sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word]))
+                sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word])*idf.get(word, 1))
             elif word in oov:
-                sum_vektor_h=sum_vektor_h*(oov[word])
+                sum_vektor_h=sum_vektor_h*(oov[word]*idf.get(word, 1))
             else:
                 oov[word]=np.random.rand(len(sum_vektor_h))
-                sum_vektor_h=sum_vektor_h*(oov[word])
+                sum_vektor_h=sum_vektor_h*(oov[word]*idf.get(word, 1))
 
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
@@ -430,6 +433,7 @@ def headline_emb_multi_EXT(headlines_list_text, embeddings_dict, ext_features_fi
 
 
 def headline_emb_multi(headlines_list_text, embeddings_dict):
+    idf=create_idf_dict(headlines_list_text)
     print "works"
     matrix=[]
     oov={}
@@ -441,12 +445,12 @@ def headline_emb_multi(headlines_list_text, embeddings_dict):
         sum_vektor_h=np.ones(check)
         for word in headline:
             if word in embeddings_dict.keys(): 
-                sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word]))
+                sum_vektor_h=sum_vektor_h*(np.array(embeddings_dict[word])*idf.get(word, 1))
             elif word in oov:
-                sum_vektor_h=sum_vektor_h*(oov[word])
+                sum_vektor_h=sum_vektor_h*(oov[word]*idf.get(word, 1))
             else:
                 oov[word]=np.random.rand(len(sum_vektor_h))
-                sum_vektor_h=sum_vektor_h*(oov[word])
+                sum_vektor_h=sum_vektor_h*(oov[word]*idf.get(word, 1))
 
         #print len(sum_vektor_h)
         if len(sum_vektor_h)==check:
