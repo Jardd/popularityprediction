@@ -15,8 +15,9 @@ if ( __name__ == "__main__"):
     split=int(sys.argv[3])
     tag=str(sys.argv[4])
     emb=str(sys.argv[5])
-    ext_feature_file_train=str(sys.argv[6])
-    ext_feature_file_test=str(sys.argv[7])
+    konkatenation_method=str(sys.argv[6])
+    ext_feature_file_train=str(sys.argv[7])
+    ext_feature_file_test=str(sys.argv[8])
     print "sdfds"
-    run.skipgram(train_corpus, test_corpus, split, tag, emb, ext_feature_file_train, ext_feature_file_test)
+    run.skipgram(train_corpus, test_corpus, split, tag, emb,konkatenation_method , ext_feature_file_train, ext_feature_file_test)
 
