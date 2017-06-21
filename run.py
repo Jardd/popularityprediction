@@ -244,6 +244,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenatio
             json.dump(test_matrix, f)
     print "test to emb finished"
    
+    #target_names=["low","high"]
    
        #low vs high
     if split ==44:
@@ -268,13 +269,13 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenatio
                 high_low_vektors.append(test_matrix[i])
         test_matrix=high_low_vektors
         test_classes=high_low_classes
+    target_names=["low","mid-low","mid-high","high"]
     print len(train_headlines_list_text)
     print len(train_classes)
 
     print len(test_headlines_list_text)
     print len(test_classes)
     print len(test_matrix)
-    target_names=["low","high"]
     #train_matrix, test_matrix=featureSelection.chiSquare(train_matrix, test_matrix, train_classes, 170, [])
     if split==44:
         target_names=["low","low-med","high-med","high"]
