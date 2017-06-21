@@ -1,7 +1,5 @@
-#from xml.dom.minidom import parse
-#import xml.dom.minidom
+
 import analyse
-#import baseline
 import math
 import sys
 import nltk
@@ -15,18 +13,26 @@ import ml
 import os
 from collections import defaultdict 
 import numpy as np
+
+
+
+
+
 def unigramBaseline(train_corpus, test_corpus,split, tag, fs, k):
+    """Runs the unigram Baseline.  
+    train_corpus: path to the train corpus in XML format
+    test_corpus: path to the test corpus in XML format
+    split: number of Klasses (either 2 or 4)
+    tag: XML tag of popularity messure (T1 for tweets after one day)
+    fs: Type of Featureselection. ("CHI" for chi-squarred Error or "" empty sting if no feature selection )
+    k: numbers of features to select.
+    """
     headlines_train , headlines_test =xmlProc.readXML(train_corpus, test_corpus)
     
-    #l=analyse.make_list_num(headlines_train, tag)
-    #analyse.boxplot(l)
-    #analyse.writeInFile(l)
-    #l=analyse.make_list_num(headlines_test, tag)
-    #analyse.boxplot(l)
     
-    print len(headlines_train) , " : ",len (headlines_test)
-    print headlines_train[0].getElementsByTagName("text")[0].childNodes[0].data
-    print headlines_test[0].getElementsByTagName("text")[0].childNodes[0].data
+    #print len(headlines_train) , " : ",len (headlines_test)
+    #print headlines_train[0].getElementsByTagName("text")[0].childNodes[0].data
+    #print headlines_test[0].getElementsByTagName("text")[0].childNodes[0].data
     #headlines_train=textProcessing.posToJson(headlines_train,train_corpus+".json",headlines_test, test_corpus+".json")
 
     
@@ -62,7 +68,9 @@ def unigramBaseline(train_corpus, test_corpus,split, tag, fs, k):
     analyse.getDist2(test_headlines_list_text, test_classes)
     print test_headlines_list_text[0]
     
-    if split ==4:
+    
+    #low vs hig
+    if split ==44:
         high_low_classes=[]
         high_low_vektors=[]
         for i in range(0, len(train_classes)):
@@ -85,6 +93,11 @@ def unigramBaseline(train_corpus, test_corpus,split, tag, fs, k):
         test_classes=high_low_classes
     #print len(train_headlines_list_text)
     #print train_headlines_list_text
+    
+    
+    
+    
+    
     
     """Feature Selection"""
     #features=featureSelection.all_features(train_headlines_list_text)
@@ -122,8 +135,8 @@ def unigramBaseline(train_corpus, test_corpus,split, tag, fs, k):
     clf = ml.fit_training_svm(train_headlines_vektor_binary, train_classes)
     #print "predicting.."
     pred_classes=clf.predict(test_headlines_vektor_binary)
-    for i in range(0, len(test_headlines_list_text)):
-        print test_classes[i], "\t", pred_classes[i] ,"\t",test_headlines_list_text[i] , "\t", "contorl"
+    #for i in range(0, len(test_headlines_list_text)):
+    #    print test_classes[i], "\t", pred_classes[i] ,"\t",test_headlines_list_text[i] , "\t", "contorl"
 
     analyse.clfResult(train_corpus, test_corpus, tag, headlines_train, fs, test_classes, pred_classes, target_names)
 
@@ -131,7 +144,17 @@ def unigramBaseline(train_corpus, test_corpus,split, tag, fs, k):
 
 
 
-def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_file_train, ext_feature_file_test):
+def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenation_method,ext_feature_file_train, ext_feature_file_test):
+    """Uses pretrained Embeddings to classify headlines
+      
+    train_corpus: path to the train corpus in XML format
+    test_corpus: path to the test corpus in XML format
+    split: number of Klasses (either 2 or 4)
+    tag: XML tag of popularity messure (T1 for tweets after one day)
+    embeddings_json: Pre-trained Embeddings in dict format in a json file or a text file with "word \t embedding".
+    ext_feature_file_train: path to file which holds the external features from Dimitrova et al. for the trainingsset
+    ext_feature_file_test: path to file which holds the external features from Dimitrova et al. for the testset
+    """
     headlines_train , headlines_test =xmlProc.readXML(train_corpus, test_corpus)
     corpus_train=train_corpus.split("/")[1]  
     corpus_test=test_corpus.split("/")[1]  
@@ -144,9 +167,6 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
         print "in if"
         with open(embeddings_json) as data_file:
             embeddings_dict=json.load(data_file)
-    elif embeddings_json.endswith("300.txt"):
-        print "google"
-        embeddings_dict=loadGoogle(embeddings_json)
     else:
         embeddings_dict=loadGloVe(embeddings_json)
       
@@ -188,11 +208,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
         test_classes=high_low_classes
     print len(train_headlines_list_text)
     print len(train_classes)
-    #print train_headlines_list_text
 
-
-    #print embeddings_dict
-    #print embeddings_dict["for"]
     check=len(embeddings_dict["for"])    
 
     
@@ -202,16 +218,22 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_multi_EXT"+corpus_train+"_"+embedd
-    headlines_emb_test="headlines_multi_EXT"+corpus_test+"_"+embedd
+    headlines_emb_train="headlines_"+konkatenation_method+"_"+corpus_train+"_"+embedd
+    headlines_emb_test="headlines_"+konkatenation_method+"_"+corpus_test+"_"+embedd
     if os.path.exists("headline_new/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
-        with open("headline_emb/"+headlines_emb_train) as data_file:
+        with open("headline_new/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
     else:
-        #train_matrix=convert_headlines_to_emb_add(train_headlines_list_text, embeddings_dict)
-        #train_matrix=convert_headlines_to_emb_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
-        train_matrix=headline_emb_multi_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
-        #train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict)
+        if konkatenation_method == "add":
+            train_matrix=convert_headlines_to_emb_add(train_headlines_list_text, embeddings_dict)
+        elif konkatenation_method == "multi":
+            train_matrix=headline_emb_multi(train_headlines_list_text, embeddings_dict)
+        elif konkatenation_method == "addEXT":
+            train_matrix=convert_headlines_to_emb_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
+        elif konkatenation_method == "multiEXT" :
+            train_matrix=headline_emb_multi_EXT(train_headlines_list_text, embeddings_dict,ext_feature_file_train)
+        else:
+            print "invalide konkatenations methode"
         with open("headline_new/"+headlines_emb_train, "w") as f:
             json.dump(train_matrix, f)
                           
@@ -222,20 +244,29 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     test_matrix=[]
     print "stat making test_emb"
     
-    if os.path.exists("headline_emb/"+headlines_emb_test): #headlines already representet as embeddings with weights applied
+    if os.path.exists("headline_new/"+headlines_emb_test): #headlines already representet as embeddings with weights applied
         with open("headline_new/"+headlines_emb_test) as data_file:
             test_matrix=json.load(data_file)
     else:
-        #test_matrix=convert_headlines_to_emb_add(test_headlines_list_text, embeddings_dict)
-        #test_matrix=convert_headlines_to_emb_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
-        test_matrix=headline_emb_multi_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
-        #test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict)
+        if konkatenation_method == "add" :
+            test_matrix=convert_headlines_to_emb_add(test_headlines_list_text, embeddings_dict)
+            
+        elif konkatenation_method == "multi" :
+            test_matrix=headline_emb_multi(test_headlines_list_text, embeddings_dict)
+        
+        elif konkatenation_method == "addEXT":
+            test_matrix=convert_headlines_to_emb_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
+        
+        elif konkatenation_method == "multiEXT" :
+            test_matrix=headline_emb_multi_EXT(test_headlines_list_text, embeddings_dict,ext_feature_file_test)
+        else:
+            print "invalide konkatenations methode"
+            
+            
         with open("headline_new/"+headlines_emb_test, "w") as f:
             json.dump(test_matrix, f)
     print "test to emb finished"
    
-   # print oov
-
 
     print len(test_headlines_list_text)
     print len(test_classes)
@@ -252,10 +283,19 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, ext_feature_
     
     fs=[]
     analyse.clfResult(train_corpus, test_corpus, tag, headlines_train, fs, test_classes, pred_classes, target_names)
+    print "Mehode:", konkatenation_method
+    print "EMB:", embeddings_json
 
 
 
 def create_idf_dict(headlines_list_text):
+    """
+    Given the headlines of the trainingsset, creates an idf dictionary "{word: idfscore}"
+    headlines_list_text: a 2D list of tokenized headlines 
+    returns: dict
+    """
+    
+    
     vocab=set(sum(headlines_list_text, []))
     idf=defaultdict(int)
     num_doc=len(headlines_list_text)
@@ -273,6 +313,10 @@ def create_idf_dict(headlines_list_text):
 
 
 def convert_headlines_to_emb_EXT(headlines_list_text, embeddings_dict, ext_features_file):
+    """
+    
+    
+    """
     ext_features=read_ext_features(ext_features_file)
     
     matrix=[]
