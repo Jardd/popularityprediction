@@ -184,30 +184,7 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenatio
     train_headlines_list_text=textProcessing.getWordsFromJson(train_headlines_list)
     test_headlines_list_text=textProcessing.getWordsFromJson(test_headlines_list)
 
-    
-    if split ==4:
-        high_low_classes=[]
-        high_low_vektors=[]
-        for i in range(0, len(train_classes)):
-            if train_classes[i]==0 or train_classes[i]==3:
-                high_low_classes.append(train_classes[i])
-                high_low_vektors.append(train_headlines_list_text[i])
-        train_headlines_list_text=high_low_vektors
-        train_classes=high_low_classes
-        
-        high_low_classes=[]
-        high_low_vektors=[]
-        for i in range(0, len(test_classes)):
-            if test_classes[i]==0 or test_classes[i]==1:
-                high_low_classes.append(0)
-                high_low_vektors.append(test_headlines_list_text[i])
-            if test_classes[i]==2 or test_classes[i]==3:
-                high_low_classes.append(3)
-                high_low_vektors.append(test_headlines_list_text[i])
-        test_headlines_list_text=high_low_vektors
-        test_classes=high_low_classes
-    print len(train_headlines_list_text)
-    print len(train_classes)
+
 
     check=len(embeddings_dict["for"])    
 
@@ -267,6 +244,32 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenatio
             json.dump(test_matrix, f)
     print "test to emb finished"
    
+   
+       #low vs high
+    if split ==44:
+        high_low_classes=[]
+        high_low_vektors=[]
+        for i in range(0, len(train_classes)):
+            if train_classes[i]==0 or train_classes[i]==3:
+                high_low_classes.append(train_classes[i])
+                high_low_vektors.append(train_matrix[i])
+        train_matrix=high_low_vektors
+        #train_headlines_list_text=high_low_vektors
+        train_classes=high_low_classes
+        
+        high_low_classes=[]
+        high_low_vektors=[]
+        for i in range(0, len(test_classes)):
+            if test_classes[i]==0 or test_classes[i]==1:
+                high_low_classes.append(0)
+                high_low_vektors.append(test_matrix[i])
+            if test_classes[i]==2 or test_classes[i]==3:
+                high_low_classes.append(3)
+                high_low_vektors.append(test_matrix[i])
+        test_matrix=high_low_vektors
+        test_classes=high_low_classes
+    print len(train_headlines_list_text)
+    print len(train_classes)
 
     print len(test_headlines_list_text)
     print len(test_classes)
