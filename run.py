@@ -195,8 +195,8 @@ def skipgram(train_corpus, test_corpus,split, tag, embeddings_json, konkatenatio
     print "start making train_emb"
     i=0
     embedd=embeddings_json.split("/")[1]
-    headlines_emb_train="headlines_"+konkatenation_method+"_"+corpus_train+"_"+embedd
-    headlines_emb_test="headlines_"+konkatenation_method+"_"+corpus_test+"_"+embedd
+    headlines_emb_train="IDF_headlines_"+konkatenation_method+"_"+corpus_train+"_"+embedd
+    headlines_emb_test="IDF_headlines_"+konkatenation_method+"_"+corpus_test+"_"+embedd
     if os.path.exists("headline_new/"+headlines_emb_train): #headlines already representet as embeddings with weights applied
         with open("headline_new/"+headlines_emb_train) as data_file:
             train_matrix=json.load(data_file)
